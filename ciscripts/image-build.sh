@@ -8,21 +8,19 @@ set -u
 # required shell params
 
 : "${IMAGE_ID:?"should not be empty"}"
+: "${YUM_HOST:?"should not be empty"}"
 
 cd ${BASH_SOURCE[0]%/*}/wakame-vdc
 
 # wait for the instance to be running
-
 . ${BASH_SOURCE[0]%/*}/retry.sh
 
 # vifs
-
 network_id="nw-demo1"
 security_group_id="sg-cicddemo"
 vifs="vifs.json"
 
 # instance-specific parameter
-
 cpu_cores="1"
 hypervisor="kvm"
 memory_size="512"
@@ -42,7 +40,6 @@ vifs="${vifs}" network_id="${network_id}" security_group_id="${security_group_id
 display_name="db"
 
 # create an instance
-
 instance_id="$(
   mussel instance create \
    --cpu-cores    "${cpu_cores}"    \
@@ -72,5 +69,56 @@ mussel instance poweroff ${instance_id}
 
 retry_until [[ '"$(mussel instance show "${instance_id}" | egrep -w "^:state: halted")"' ]]
 
-mussel instance backup ${instance_id}
+DB_ID="$(mussel instance backup ${instance_id} | egrep ^:id: | awk '{print $2}')"
+
+retry_until [[ '"$(mussel image show "${instance_id}" | egrep -w "^:state: available")"' ]]
+
+mussel instance destroy "${DB_ID}"
+
+## create app image
+
+# app display name
+display_name="app"
+
+# create an instance
+instance_id="$(
+  mussel instance create \
+   --cpu-cores    "${cpu_cores}"    \
+   --hypervisor   "${hypervisor}"   \
+   --image-id     "${image_id}"     \
+   --memory-size  "${memory_size}"  \
+   --ssh-key-id   "${ssh_key_id}"   \
+   --vifs         "${vifs}"         \
+   --display-name "${display_name}" \
+  | egrep ^:id: | awk '{print $2}'
+)"
+: "${instance_id:?"should not be empty"}"
+echo "${instance_id} is initializing..." >&2
+
+trap 'mussel instance destroy "${instance_id}"' ERR
+
+retry_until [[ '"$(mussel instance show "${instance_id}" | egrep -w "^:state: running")"' ]]
+
+eval "$(${BASH_SOURCE[0]%/*}/instance-get-ipaddr.sh "${instance_id}")"
+
+{
+  ${BASH_SOURCE[0]%/*}/instance-wait4ssh.sh  "${instance_id}"
+  ${BASH_SOURCE[0]%/*}/instance-exec.sh      "${instance_id}" \
+		      YUM_HOST="${YUM_HOST}" \
+		      DB_HOST="${DB_HOST}"  \
+		      bash -l < ${BASH_SOURCE[0]%/*}/provision-imgapp.sh
+} >&2
+
+mussel instance poweroff ${instance_id}
+
+retry_until [[ '"$(mussel instance show "${instance_id}" | egrep -w "^:state: halted")"' ]]
+
+APP_ID="$(mussel instance backup ${instance_id} | egrep ^:id: | awk '{print $2}')"
+
+retry_until [[ '"$(mussel image show "${instance_id}" | egrep -w "^:state: available")"' ]]
+
+mussel instance destroy "${APP_ID}"
+
+echo DB_ID="${DB_ID}"
+echo APP_ID="${APP_ID}"
 
