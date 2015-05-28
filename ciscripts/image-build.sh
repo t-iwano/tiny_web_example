@@ -116,10 +116,9 @@ retry_until [[ '"$(mussel instance show "${instance_id}" | egrep -w "^:state: ha
 APP_ID="$(mussel instance backup ${instance_id} | egrep ^:image_id: | awk '{print $2}')"
 echo "app image id: ${APP_ID}"
 
-retry_until [[ '"$(mussel image show "${APP_ID}" | egrep -w "^:state: available")"' ]]
+RETRY_WAIT_SEC=180 retry_until [[ '"$(mussel image show "${APP_ID}" | egrep -w "^:state: available")"' ]]
 
 mussel instance destroy "${instance_id}"
 
 echo DB_ID="${DB_ID}"
 echo APP_ID="${APP_ID}"
-
