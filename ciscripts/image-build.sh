@@ -69,10 +69,10 @@ mussel instance poweroff --force false ${instance_id}
 
 retry_until [[ '"$(mussel instance show "${instance_id}" | egrep -w "^:state: halted")"' ]]
 
-DB_ID="$(mussel instance backup ${instance_id} | egrep ^:image_id: | awk '{print $2}')"
-echo "database image id: ${DB_ID}"
+DB_IMAGE_ID="$(mussel instance backup ${instance_id} | egrep ^:image_id: | awk '{print $2}')"
+echo "database image id: ${DB_IMAGE_ID}"
 
-retry_until [[ '"$(mussel image show "${DB_ID}" | egrep -w "^:state: available")"' ]]
+retry_until [[ '"$(mussel image show "${DB_IMAGE_ID}" | egrep -w "^:state: available")"' ]]
 
 mussel instance destroy "${instance_id}"
 
@@ -113,12 +113,12 @@ mussel instance poweroff --force false ${instance_id}
 
 retry_until [[ '"$(mussel instance show "${instance_id}" | egrep -w "^:state: halted")"' ]]
 
-APP_ID="$(mussel instance backup ${instance_id} | egrep ^:image_id: | awk '{print $2}')"
-echo "app image id: ${APP_ID}"
+APP_IMAGE_ID="$(mussel instance backup ${instance_id} | egrep ^:image_id: | awk '{print $2}')"
+echo "app image id: ${APP_IMAGE_ID}"
 
-RETRY_WAIT_SEC=180 retry_until [[ '"$(mussel image show "${APP_ID}" | egrep -w "^:state: available")"' ]]
+RETRY_WAIT_SEC=180 retry_until [[ '"$(mussel image show "${APP_IMAGE_ID}" | egrep -w "^:state: available")"' ]]
 
 mussel instance destroy "${instance_id}"
 
-echo DB_ID="${DB_ID}"
-echo APP_ID="${APP_ID}"
+echo DB_IMAGE_ID="${DB_IMAGE_ID}"
+echo APP_IMAGE_ID="${APP_IMAGE_ID}"
