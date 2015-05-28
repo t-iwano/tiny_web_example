@@ -65,7 +65,7 @@ eval "$(${BASH_SOURCE[0]%/*}/instance-get-ipaddr.sh "${instance_id}")"
   ${BASH_SOURCE[0]%/*}/instance-exec.sh      "${instance_id}" < ${BASH_SOURCE[0]%/*}/provision-imgdb.sh
 } >&2
 
-mussel instance poweroff ${instance_id}
+mussel instance poweroff --force false ${instance_id}
 
 retry_until [[ '"$(mussel instance show "${instance_id}" | egrep -w "^:state: halted")"' ]]
 
@@ -73,7 +73,7 @@ DB_ID="$(mussel instance backup ${instance_id} | egrep ^:id: | awk '{print $2}')
 
 retry_until [[ '"$(mussel image show "${instance_id}" | egrep -w "^:state: available")"' ]]
 
-mussel instance destroy "${DB_ID}"
+mussel instance destroy "${instance_id}"
 
 ## create app image
 
@@ -105,11 +105,10 @@ eval "$(${BASH_SOURCE[0]%/*}/instance-get-ipaddr.sh "${instance_id}")"
   ${BASH_SOURCE[0]%/*}/instance-wait4ssh.sh  "${instance_id}"
   ${BASH_SOURCE[0]%/*}/instance-exec.sh      "${instance_id}" \
 		      YUM_HOST="${YUM_HOST}" \
-		      DB_HOST="${DB_HOST}"  \
 		      bash -l < ${BASH_SOURCE[0]%/*}/provision-imgapp.sh
 } >&2
 
-mussel instance poweroff ${instance_id}
+mussel instance poweroff --force false ${instance_id}
 
 retry_until [[ '"$(mussel instance show "${instance_id}" | egrep -w "^:state: halted")"' ]]
 
@@ -117,7 +116,7 @@ APP_ID="$(mussel instance backup ${instance_id} | egrep ^:id: | awk '{print $2}'
 
 retry_until [[ '"$(mussel image show "${instance_id}" | egrep -w "^:state: available")"' ]]
 
-mussel instance destroy "${APP_ID}"
+mussel instance destroy "${instance_id}"
 
 echo DB_ID="${DB_ID}"
 echo APP_ID="${APP_ID}"
