@@ -66,3 +66,34 @@ yum repolist
 # install tiny-web-example.rpm
 yum install -y tiny-web-example
 
+## /etc/default/tiny-web-example-webapi
+cat <<-'EOS' > /etc/default/tiny-web-example-webapi
+	# tiny-web-example
+	EXAMPLE_ROOT=/opt/axsh/tiny-web-example
+	PATH=/root/.rbenv/shims:$PATH
+
+	# Commnet out to run the vdc init script.
+	#RUN=yes
+
+	## rack params
+	RACK_ENV=development
+	BIND_ADDR=0.0.0.0
+	PORT=8080
+	UNICORN_CONF=/etc/tiny-web-example/unicorn-common.conf
+	EOS
+
+## /etc/default/tiny-web-example-webapp
+cat <<-'EOS' > /etc/default/tiny-web-example-webapp
+	# tiny-web-example
+	EXAMPLE_ROOT=/opt/axsh/tiny-web-example
+	PATH=/root/.rbenv/shims:$PATH
+
+	# Commnet out to run the vdc init script.
+	#RUN=yes
+
+	## rack params
+	RACK_ENV=development
+	BIND_ADDR=0.0.0.0
+	PORT=80
+	UNICORN_CONF=/etc/tiny-web-example/unicorn-common.conf
+	EOS
