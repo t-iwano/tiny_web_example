@@ -66,10 +66,10 @@ retry_until [[ '"$(mussel instance show "${instance_id}" | egrep -w "^:state: ru
 
 eval "$(${BASH_SOURCE[0]%/*}/instance-get-ipaddr.sh "${instance_id}")"
 
-{
-  ${BASH_SOURCE[0]%/*}/instance-wait4ssh.sh  "${instance_id}"
-  ${BASH_SOURCE[0]%/*}/instance-exec.sh      "${instance_id}" < ${BASH_SOURCE[0]%/*}/provision-imgdb.sh
-} >&2
+
+${BASH_SOURCE[0]%/*}/instance-wait4ssh.sh  "${instance_id}"
+${BASH_SOURCE[0]%/*}/instance-exec.sh      "${instance_id}" < ${BASH_SOURCE[0]%/*}/provision-imgdb.sh
+
 
 mussel instance poweroff --force false ${instance_id}
 
@@ -108,12 +108,11 @@ retry_until [[ '"$(mussel instance show "${instance_id}" | egrep -w "^:state: ru
 
 eval "$(${BASH_SOURCE[0]%/*}/instance-get-ipaddr.sh "${instance_id}")"
 
-{
-  ${BASH_SOURCE[0]%/*}/instance-wait4ssh.sh  "${instance_id}"
-  ${BASH_SOURCE[0]%/*}/instance-exec.sh      "${instance_id}" \
-		      YUM_HOST="${YUM_HOST}" \
-		      bash -l < ${BASH_SOURCE[0]%/*}/provision-imgapp.sh
-} >&2
+
+${BASH_SOURCE[0]%/*}/instance-wait4ssh.sh  "${instance_id}"
+${BASH_SOURCE[0]%/*}/instance-exec.sh      "${instance_id}" \
+		    YUM_HOST="${YUM_HOST}" \
+		    bash -l < ${BASH_SOURCE[0]%/*}/provision-imgapp.sh
 
 mussel instance poweroff --force false ${instance_id}
 
