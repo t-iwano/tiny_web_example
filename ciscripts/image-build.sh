@@ -64,8 +64,14 @@ trap 'mussel instance destroy "${instance_id}"' ERR
 
 retry_until [[ '"$(mussel instance show "${instance_id}" | egrep -w "^:state: running")"' ]]
 
-eval "$(${BASH_SOURCE[0]%/*}/instance-get-ipaddr.sh "${instance_id}")"
-
+ipaddr="$(
+  mussel instance show "${instance_id}" \
+  | egrep :address:  \
+  | awk '{print $2}' \
+  | tr '\n' ','
+)"
+: "${ipaddr:?"should not be empty"}"
+ipaddr="${ipaddr%%,}"
 
 ${BASH_SOURCE[0]%/*}/instance-wait4ssh.sh  "${instance_id}"
 ${BASH_SOURCE[0]%/*}/instance-exec.sh      "${instance_id}" < ${BASH_SOURCE[0]%/*}/provision-imgdb.sh
@@ -106,8 +112,14 @@ trap 'mussel instance destroy "${instance_id}"' ERR
 
 retry_until [[ '"$(mussel instance show "${instance_id}" | egrep -w "^:state: running")"' ]]
 
-eval "$(${BASH_SOURCE[0]%/*}/instance-get-ipaddr.sh "${instance_id}")"
-
+ipaddr="$(
+  mussel instance show "${instance_id}" \
+  | egrep :address:  \
+  | awk '{print $2}' \
+  | tr '\n' ','
+)"
+: "${ipaddr:?"should not be empty"}"
+ipaddr="${ipaddr%%,}"
 
 ${BASH_SOURCE[0]%/*}/instance-wait4ssh.sh  "${instance_id}"
 ${BASH_SOURCE[0]%/*}/instance-exec.sh      "${instance_id}" \
