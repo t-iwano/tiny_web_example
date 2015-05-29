@@ -10,7 +10,6 @@ set -x
 
 # required shell params
 
-: "${YUM_HOST:?"should not be empty"}"
 : "${DB_HOST:?"should not be empty"}"
 
 # configure db host
