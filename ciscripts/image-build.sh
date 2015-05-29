@@ -9,6 +9,7 @@ set -u
 
 : "${IMAGE_ID:?"should not be empty"}"
 : "${YUM_HOST:?"should not be empty"}"
+: "${WRITE_FILE:?"shoud not be empty"}"
 
 cd ${BASH_SOURCE[0]%/*}/wakame-vdc
 
@@ -170,3 +171,6 @@ echo "${instance_id} is deleted"
 
 echo DB_IMAGE_ID="${DB_IMAGE_ID}"
 echo APP_IMAGE_ID="${APP_IMAGE_ID}"
+
+echo "DB_IMAGE_ID=${DB_IMAGE_ID}"   >  ${WRITE_FILE}
+echo "APP_IMAGE_ID=${APP_IMAGE_ID}" >> ${WRITE_FILE}
