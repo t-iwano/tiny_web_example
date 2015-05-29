@@ -28,11 +28,17 @@ image_id="${IMAGE_ID}"
 ssh_key_id="ssh-cicddemo"
 
 # create an musselrc
-${BASH_SOURCE[0]%/*}/gen-musselrc.sh
+cat <<EOS > ~/.musselrc
+DCMGR_HOST=10.0.2.2
+account_id=a-shpoolxx
+EOS
 
 # create an vifs
-vifs="${vifs}" network_id="${network_id}" security_group_id="${security_group_id}" \
-    ${BASH_SOURCE[0]%/*}/gen-vifs.sh
+cat <<EOS > "${vifs}"
+{
+ "eth0":{"network":"${network_id}","security_groups":"${security_group_id}"}
+}
+EOS
 
 ## create database image
 
