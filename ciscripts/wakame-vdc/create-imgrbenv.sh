@@ -13,7 +13,7 @@ vifs="vifs.json"
 # instance-specific parameter
 
 cpu_cores="1"
-hypervisor="kvm"
+hypervisor="openvz"
 memory_size="1024"
 image_id="wmi-centos1d64"
 display_name="imgrbenv"

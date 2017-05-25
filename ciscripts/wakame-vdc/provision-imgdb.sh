@@ -31,7 +31,7 @@ done
 # db params
 dbname="tiny_web_example"
 dbuser="root"
-dbacl="10.0.22.%"
+dbacl="10.0.2.%"
 
 # grant db
 mysql -u${dbuser} mysql <<EOS

@@ -45,7 +45,7 @@ CentOS-6.6にて動作確認を行いました。それよりも古い環境の�
 # cp webapi.conf.example webapi.conf
 ```
 
-webapiに接続するDataBaseのIPアドレスを記述します
+webapiに接続するWebサーバーのIPアドレスを記述します
 ```
 # vi webapi.conf
 ```
